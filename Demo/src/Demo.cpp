@@ -105,9 +105,9 @@ int main()
 
   io::io_service io;
   printer p(io);
- // boost::thread t(boost::bind(&io::io_service::run, &io));
+  boost::thread t(boost::bind(&io::io_service::run, &io));
   io.run();
- // t.join();
+  t.join();
 
   return 0;
 }
