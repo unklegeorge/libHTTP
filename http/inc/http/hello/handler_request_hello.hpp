@@ -39,7 +39,7 @@ public:
 		return true;
 	}
 	
-	virtual std::pair<bool, std::vector<boost__asio::const_buffer> > react()
+	virtual std::pair<bool, std::vector<boost::asio::const_buffer> > react()
 	{
 		log() << "Responding\r\n";
 		name_ = "Hello " + name_;
@@ -52,7 +52,7 @@ public:
 		reset_buffers();
 		res().to_buffers(vec());
 		
-		append_to_buffers(boost__asio::const_buffer(name_.c_str(), name_.length()));
+		append_to_buffers(boost::asio::const_buffer(name_.c_str(), name_.length()));
 				
 		return make_pair(true, vec());
 	}

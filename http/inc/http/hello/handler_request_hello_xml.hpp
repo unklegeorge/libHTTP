@@ -40,21 +40,21 @@ public:
 		return true;
 	}
 	
-	virtual std::pair<bool, std::vector<boost__asio::const_buffer> > react()
+	virtual std::pair<bool, std::vector<boost::asio::const_buffer> > react()
 	{
 		log() << "Responding\r\n";
 		
-		tinyxml::handle dochandle(&doc_);		
-		tinyxml::element* name = dochandle.FirstChildElement("greet").Element();
+		TiXmlHandle dochandle(&doc_);
+		TiXmlElement* name = dochandle.FirstChildElement("greet").Element();
 		if (name)
 		{		
 			std::string greeting = "Hello ";
 			greeting += name->GetText();
 			
-			tinyxml::document doc;
-			tinyxml::declaration* decl = new tinyxml::declaration("1.0", "", "");
-			tinyxml::element* element = new tinyxml::element("greeting");
-			tinyxml::text* text = new tinyxml::text(greeting);
+			TiXmlDocument doc;
+			TiXmlDeclaration* decl = new TiXmlDeclaration("1.0", "", "");
+			TiXmlElement* element = new TiXmlElement("greeting");
+			TiXmlText* text = new TiXmlText(greeting);
 			
 			element->LinkEndChild(text);
 			doc.LinkEndChild(decl);
@@ -71,7 +71,7 @@ public:
 			reset_buffers();
 			res().to_buffers(vec());
 			
-			append_to_buffers(boost__asio::const_buffer(xmldoc_.c_str(), xmldoc_.length()));
+			append_to_buffers(boost::asio::const_buffer(xmldoc_.c_str(), xmldoc_.length()));
 		}
 		else
 		{
@@ -85,7 +85,7 @@ public:
 	}
 	
 private:
-	tinyxml::document doc_;
+	TiXmlDocument doc_;
 	std::string xmldoc_;	
 };
 

@@ -55,10 +55,10 @@ std::string hello_xml(http::client::sync::connection_base_ptr con,
 	http::client::sync::post poster(con, uri, "1.1", 
 		new http::response::handler_hello_xml_ctor());
 		
-	tinyxml::document doc;
-	tinyxml::declaration* decl = new tinyxml::declaration("1.0", "", "");
-	tinyxml::element* element = new tinyxml::element("greet");
-	tinyxml::text* text = new tinyxml::text(name);
+	TiXmlDocument doc;
+	TiXmlDeclaration* decl = new TiXmlDeclaration("1.0", "", "");
+	TiXmlElement* element = new TiXmlElement("greet");
+	TiXmlText* text = new TiXmlText(name);
 	
 	element->LinkEndChild(text);
 	doc.LinkEndChild(decl);

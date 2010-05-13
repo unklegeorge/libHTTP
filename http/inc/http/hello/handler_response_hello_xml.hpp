@@ -40,9 +40,9 @@ public:
 	
 	virtual boost::tuple<bool, boost::any> react()
 	{		
-		tinyxml::handle dochandle(&doc_);
+		TiXmlHandle dochandle(&doc_);
 		
-		tinyxml::element* greeting = dochandle.FirstChildElement("greeting").Element();
+		TiXmlElement* greeting = dochandle.FirstChildElement("greeting").Element();
 		if (greeting)
 		{
 			return boost::make_tuple(true, static_cast<std::string>(greeting->GetText()));
@@ -54,7 +54,7 @@ public:
 	}
 	
 private:
-	tinyxml::document doc_;
+	TiXmlDocument doc_;
 	std::string reply_;
 };
 
