@@ -4,10 +4,13 @@
 #include <boost/format.hpp>
 #include <boost/filesystem/path.hpp>
 
+#include <http/xmlrpc/server.hpp>
+#include "xmlrpc_print_visitor.hpp"
+
 using namespace std;
 using namespace boost;
 using filesystem::path;
-#include <http/hello/server.hpp>
+using posix_time::ptime;
 
 // This class links the debug_logger provided by libHTTP to cout.
 // It also prefixes all libHTTP messages with "http: ". The actual
@@ -30,19 +33,35 @@ debug_link::debug_link() :
 	conn_(http::log().attach(debug_link_))
 {}
 
-// Here we create the HTTP host, at this point the server binds to 
-// the two ports but cannot react to any incomming connections until 
-// it is "run".
+// This is a sample remote method. The param vector is allowed to be empty.
 
-static http::host host;
-
-#if defined(HTTP_SUPPORT_OPENSSL)
-std::string get_passwords(size_t, http::boost__asio::ssl::context_base::password_purpose)
+http::xmlrpc::param remote_method(http::xmlrpc::param_arguments params)
 {
-	return "eoin";
-}
-#endif
+	cout << "In Remote Method!\r\n";
 	
+	for(http::xmlrpc::param_arguments::const_iterator it=params.begin(); it!=params.end(); ++it)
+	{
+		apply_visitor(print_visitor(), *it);
+	}
+
+	// To return more than one param we must place them into a container type
+	// either an array or struct.
+	// See the client code for a better explanation of the different param types
+	
+	// Create an array type
+	http::xmlrpc::param_vec vec;
+	
+	vec().push_back("Return string");
+	vec().push_back(3.1415);
+	
+	return vec;
+}
+
+// Create a host listening on ports 80 for https and 443 for shttp (not implemented)
+static http::host host;
+	
+// This is simply a seperate thread to run the host freeing up the main thread to 
+// wait for the kill singnal.
 void host_procedure()
 {
 	try
@@ -50,23 +69,7 @@ void host_procedure()
 	
 	cout << "Running server...\r\n";
 	
-	host.bind_to(8080);
-	
-#	if defined(HTTP_SUPPORT_OPENSSL)
-	http::boost__asio::ssl::context& context = 
-		host.prepare_ssl_context(http::boost__asio::ssl::context::sslv23);
-	
-	context.set_options(
-		http::boost__asio::ssl::context::default_workarounds | 
-		http::boost__asio::ssl::context::no_sslv2);
-		
-	context.set_password_callback(&get_passwords);
-	context.use_certificate_chain_file("server.crt");
-	context.use_private_key_file("server.pem", http::boost__asio::ssl::context::pem);
-	
-	host.ssl_bind_to(8443);
-#	endif
-
+	host.bind_to(8081);
 	host.run();
 
 	cout << "Finished\r\n";
@@ -83,14 +86,15 @@ int main()
 	try
 	{
 	
-	http::server::add_hello_handler(host, path("/hello"));
-
+	http::xmlrpc::procedure_manager& man = http::server::add_xmlrpc_handler(host, "/xmlrpc");
+	man.add_procedure("RemoteMethod", &remote_method);
+	
 	}
 	catch(const std::exception& e)
 	{
 	cout << format("Main Error: %1%.\r\n") % e.what();
 	}
-
+	
 	cout << "Initializing Host thread.\r\n";	
 	thread host_thread(&host_procedure);
 	
@@ -102,3 +106,4 @@ int main()
 	
     return 0;
 }
+
