@@ -72,7 +72,7 @@ void host_procedure()
 	cout << "Finished\r\n";
 	
 	}
-	catch(const exception& e)
+	catch(const std::exception& e)
 	{
 	cout << format("Thread Error: %1%.\r\n") % e.what();
 	}	
@@ -86,7 +86,7 @@ int main()
 	http::server::add_hello_handler(host, path("/hello"));
 	
 	}
-	catch(const exception& e)
+	catch(const std::exception& e)
 	{
 	cout << format("Main Error: %1%.\r\n") % e.what();
 	}

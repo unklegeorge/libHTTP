@@ -44,9 +44,11 @@
 <tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.2146237383" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
 <option id="gnu.cpp.link.option.paths.818991621" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 <listOptionValue builtIn="false" value="/user/rhenders/boost/lib"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/http/Debug}&quot;"/>
 </option>
 <option id="gnu.cpp.link.option.libs.1458881949" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 <listOptionValue builtIn="false" value="boost_system"/>
+<listOptionValue builtIn="false" value="http"/>
 <listOptionValue builtIn="false" value="boost_regex"/>
 <listOptionValue builtIn="false" value="boost_filesystem"/>
 <listOptionValue builtIn="false" value="boost_thread"/>

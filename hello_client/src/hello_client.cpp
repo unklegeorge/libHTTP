@@ -62,7 +62,7 @@ int main()
 #	endif
 
 	}
-	catch(const exception& e)
+	catch(const std::exception& e)
 	{
 	cout << format("Main Error: %1%.\r\n") % e.what();
 	}

@@ -5,12 +5,14 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>
+#include <boost/array.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <iostream>
 #include <string>
 
 namespace fs = boost::filesystem;
 namespace io = boost::asio;
+using boost::asio::ip::tcp;
 
 void print(const boost::system::error_code& /*e*/,
     io::deadline_timer *t, int *count)
@@ -100,14 +102,54 @@ int regex_test() {
   return 0;
 }
 
-int main()
-{
+int threads() {
+	io::io_service io;
+	printer p(io);
+	boost::thread t(boost::bind(&io::io_service::run, &io));
+	io.run();
+	t.join();
+	return 0;
+}
 
-  io::io_service io;
-  printer p(io);
-  boost::thread t(boost::bind(&io::io_service::run, &io));
-  io.run();
-  t.join();
 
-  return 0;
+int main(int argc, char* argv[]) {
+
+	try {
+		if ( argc != 2 ) {
+      std::cerr << "Usage: client <host>" << std::endl;
+      return 1;
+		}
+    io::io_service io_service;
+    tcp::resolver resolver(io_service);
+    tcp::resolver::query query(argv[1], "8181");
+    tcp::resolver::iterator itr = resolver.resolve(query);
+    tcp::resolver::iterator end;
+
+    tcp::socket socket(io_service);
+    boost::system::error_code error = io::error::host_not_found;
+    while ( error && itr != end ) {
+    	socket.close();
+    	socket.connect(*itr++, error);
+    }
+    if ( error )
+    	throw boost::system::system_error(error);
+
+    for(;;) {
+    	boost::array<char, 128> buf;
+    	boost::system::error_code error;
+
+    	size_t len = socket.read_some(io::buffer(buf), error);
+    	if ( error == io::error::eof )
+    		break; // Connection closed by peer
+    	else if ( error )
+    		throw boost::system::system_error(error);
+
+    	std::cout.write(buf.data(), len);
+    }
+
+	} catch ( std::exception &e ) {
+		std::cerr << e.what() << std::endl;
+	}
+
+	return 0;
 }
